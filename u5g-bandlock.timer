@@ -1,0 +1,9 @@
+[Unit]
+Description=U5G band preference check every 15 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=15min
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,6 @@
+[Unit]
+Description=Enforce LTE/5G band preference on UniFi U5G modem
+
+[Service]
+Type=oneshot
+ExecStart=/opt/u5g-bandlock/apply.sh
