@@ -158,6 +158,11 @@ left behind to clean up.
 | Band never changes | You haven't rebooted the modem since the first apply |
 | WAN goes down after locking | Your allowed list has no band available here — widen it and reboot the modem |
 
+## Source
+
+Developed at [Protonord](https://git.protonord.no/Protonord_public/u5g-bandlock) —
+the Forgejo repo is the source of truth; this GitHub repo is an automatic mirror.
+
 ## Notes
 
 - Tested on U5G-Max-Outdoor (UMBBE631, fw 7.5.3) with UniFi Network 10.5 on a
