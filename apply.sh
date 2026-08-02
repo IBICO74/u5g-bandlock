@@ -4,10 +4,13 @@
 # forgets them on every reboot; run this from a systemd timer (or cron) on any
 # Linux box on the LAN to re-apply them whenever they drift.
 #
-# Config: /root/.config/u5g-bandlock/env (see env.example), or set
-# U5G_BANDLOCK_ENV to another path.
+# Config: environment variables (see env.example). Read from
+# /root/.config/u5g-bandlock/env if that file exists (systemd install), or
+# passed in directly (Docker). Set U5G_BANDLOCK_ENV to use another path.
 set -euo pipefail
-source "${U5G_BANDLOCK_ENV:-/root/.config/u5g-bandlock/env}"
+ENV_FILE="${U5G_BANDLOCK_ENV:-/root/.config/u5g-bandlock/env}"
+# shellcheck source=/dev/null
+[ -f "$ENV_FILE" ] && source "$ENV_FILE"
 
 : "${MODEM_IP:?}" "${ICCID:?}" "${LTE_BAND:?}"
 MODE="${MODE:-5gnr,lte}"
