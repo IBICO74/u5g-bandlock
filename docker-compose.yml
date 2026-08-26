@@ -1,7 +1,6 @@
 services:
   u5g-bandlock:
     build: .
-    # or: image: ghcr.io/ibico74/u5g-bandlock:latest
     container_name: u5g-bandlock
     restart: unless-stopped
     environment:

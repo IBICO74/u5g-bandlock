@@ -21,7 +21,7 @@ MODEM_USER="${MODEM_USER:-}"
 # Network API (Settings → System → Device SSH Authentication).
 if [ -z "${MODEM_SSH_PASSWORD:-}" ]; then
   : "${UNIFI_HOST:?}" "${UNIFI_API_KEY:?}"
-  MGMT=$(curl -sk -m 10 -H "X-API-KEY: $UNIFI_API_KEY" \
+  MGMT=$(curl -fsSk -m 10 -H "X-API-KEY: $UNIFI_API_KEY" \
     "https://${UNIFI_HOST}/proxy/network/api/s/default/get/setting" \
     | jq -r '.data[] | select(.key=="mgmt")')
   MODEM_SSH_PASSWORD=$(jq -r '.x_ssh_password' <<<"$MGMT")
@@ -29,7 +29,7 @@ if [ -z "${MODEM_SSH_PASSWORD:-}" ]; then
 fi
 
 mctl() { printf '%s' "$1" | sshpass -p "$MODEM_SSH_PASSWORD" ssh \
-  -o StrictHostKeyChecking=no -o ConnectTimeout=10 \
+  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 \
   "${MODEM_USER}@${MODEM_IP}" uiwwand-ctl 2>/dev/null; }
 
 CUR=$(mctl "{\"method\":\"get-radio-pref\",\"params\":{\"iccid\":\"$ICCID\"}}" \

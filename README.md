@@ -78,11 +78,17 @@ B3". Numbers are plain LTE band numbers.
 
 ## Install with Docker (easiest)
 
+```bash
+git clone https://git.protonord.no/Protonord_public/u5g-bandlock && cd u5g-bandlock
+```
+
+Then edit `docker-compose.yml`:
+
 ```yaml
 # docker-compose.yml
 services:
   u5g-bandlock:
-    image: ghcr.io/ibico74/u5g-bandlock:latest   # or: build: .
+    build: .
     container_name: u5g-bandlock
     restart: unless-stopped
     environment:
@@ -96,7 +102,7 @@ services:
 ```
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 docker compose logs -f      # expect: "ok: lte_band=1,7,20,28"
 ```
 
@@ -155,8 +161,20 @@ left behind to clean up.
 |---|---|
 | `Permission denied (publickey,password)` | Device SSH is off, or the username differs — check Settings → System → Device SSH Authentication |
 | `{"error":-1}` from the modem | Wrong ICCID, or a method your firmware doesn't expose |
+| `curl: (22) The requested URL returned error: 401` | Wrong or revoked UniFi API key |
+| `curl: (22) … error: 502`/`503` | The UniFi console is restarting or unreachable (e.g. nightly maintenance) — transient, the next run recovers |
 | Band never changes | You haven't rebooted the modem since the first apply |
 | WAN goes down after locking | Your allowed list has no band available here — widen it and reboot the modem |
+
+## Dependencies
+
+| What | Details |
+|---|---|
+| UniFi Network API | `GET https://<console>/proxy/network/api/s/default/get/setting` with an `X-API-KEY` header; the `mgmt` object carries `x_ssh_username`/`x_ssh_password` (device SSH credentials). Read-only — nothing is written to the console. Answers HTML/5xx while the console restarts, which shows up as one failed run. |
+| Modem `uiwwand-ctl` (undocumented) | JSON-RPC on stdin over SSH (Dropbear, password auth via `sshpass`): `get-radio-pref` and `set-radio-pref` with `iccid`, `mode`, `lte_band`, `nr5g_sa_band`. The preference lives in tmpfs on the modem. |
+| Runtime | `bash curl jq sshpass openssh-client`; the Docker image is `alpine:3.20` with the same packages. No image is published — `docker compose` builds it locally. |
+| Protonord's own instance | The systemd install, where `/opt/u5g-bandlock` is a **symlink to the git checkout**: whatever is checked out runs on the next timer tick (every 15 min). Work on a branch in a separate worktree and merge to `main` to deploy. Config in `/root/.config/u5g-bandlock/env` (mode 600, never in git). |
+| Forgejo → GitHub | Push-mirror from `Protonord_public/u5g-bandlock` to `github.com/IBICO74/u5g-bandlock` every 8 h. Issues and pull requests are disabled on the Forgejo repo, so changes go branch → merge → push `main`. |
 
 ## Source
 
