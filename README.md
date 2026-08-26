@@ -174,7 +174,7 @@ left behind to clean up.
 | Modem `uiwwand-ctl` (undocumented) | JSON-RPC on stdin over SSH (Dropbear, password auth via `sshpass`): `get-radio-pref` and `set-radio-pref` with `iccid`, `mode`, `lte_band`, `nr5g_sa_band`. The preference lives in tmpfs on the modem. |
 | Runtime | `bash curl jq sshpass openssh-client`; the Docker image is `alpine:3.20` with the same packages. No image is published — `docker compose` builds it locally. |
 | Protonord's own instance | The systemd install, where `/opt/u5g-bandlock` is a **symlink to the git checkout**: whatever is checked out runs on the next timer tick (every 15 min). Work on a branch in a separate worktree and merge to `main` to deploy. Config in `/root/.config/u5g-bandlock/env` (mode 600, never in git). |
-| Forgejo → GitHub | Push-mirror from `Protonord_public/u5g-bandlock` to `github.com/IBICO74/u5g-bandlock` every 8 h. Issues and pull requests are disabled on the Forgejo repo, so changes go branch → merge → push `main`. |
+| Forgejo → GitHub | Push-mirror from `Protonord_public/u5g-bandlock` to `github.com/IBICO74/u5g-bandlock` every 8 h. Changes go issue → branch → PR → merge on Forgejo (`pn-forgejo` from the workspace VM); `main` is not branch-protected. |
 
 ## Source
 
