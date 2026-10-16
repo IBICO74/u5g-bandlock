@@ -12,6 +12,19 @@ ENV_FILE="${U5G_BANDLOCK_ENV:-/root/.config/u5g-bandlock/env}"
 # shellcheck source=/dev/null
 [ -f "$ENV_FILE" ] && source "$ENV_FILE"
 
+# Modem address: fixed in MODEM_IP, or looked up by MAC in the UniFi Network
+# API on every run (MODEM_MAC), so a DHCP change does not break the lock.
+if [ -n "${MODEM_MAC:-}" ]; then
+  : "${UNIFI_HOST:?}" "${UNIFI_API_KEY:?}"
+  FOUND=$(curl -fsSk -m 10 -H "X-API-KEY: $UNIFI_API_KEY" \
+    "https://${UNIFI_HOST}/proxy/network/api/s/default/stat/device" \
+    | jq -r --arg mac "${MODEM_MAC,,}" '.data[] | select(.mac==$mac) | .ip // empty') || FOUND=
+  if [ -n "$FOUND" ]; then
+    MODEM_IP=$FOUND
+  else
+    echo "warn: MAC $MODEM_MAC not found in UniFi, using MODEM_IP=${MODEM_IP:-unset}" >&2
+  fi
+fi
 : "${MODEM_IP:?}" "${ICCID:?}" "${LTE_BAND:?}"
 MODE="${MODE:-5gnr,lte}"
 NR5G_SA_BAND="${NR5G_SA_BAND:-}"

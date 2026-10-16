@@ -146,7 +146,8 @@ left behind to clean up.
 
 | Variable | Required | Meaning |
 |---|---|---|
-| `MODEM_IP` | yes | The modem's LAN IP |
+| `MODEM_IP` | yes, unless `MODEM_MAC` | The modem's LAN IP (fallback when `MODEM_MAC` is set) |
+| `MODEM_MAC` | no | The modem's MAC. Each run looks up its current IP in the Network API (`stat/device`), so a DHCP change does not break the lock. Needs `UNIFI_HOST` + `UNIFI_API_KEY` |
 | `ICCID` | yes | SIM ICCID |
 | `LTE_BAND` | yes | Allowed LTE bands, comma-separated |
 | `NR5G_SA_BAND` | no | Allowed 5G SA bands |
